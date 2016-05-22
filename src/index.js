@@ -13,6 +13,7 @@ const methods = {
     getPublicPhotos: 'flickr.people.getPublicPhotos',
     getSizes: 'flickr.photos.getSizes'
 };
+const template = require('./template');
 
 let options = {
     url: URL,
@@ -32,7 +33,7 @@ function requestPromise(config) {
         request(config, function (err, res, body) {
             if (err) {
                 return reject(err);
-            } else if (res.statusCode !== 200 || body.code !== 200) {
+            } else if (res.statusCode !== 200 || _.get(body, 'code', 200) !== 200) {
                 err = new Error("Unexpected status code: " + res.statusCode);
                 err.res = res;
                 return reject(body);
@@ -106,8 +107,10 @@ let preparePhotoInfo = (photoInfo) => {
     let title = photoInfo[0];
     let src   = photoInfo[1];
     let url   = photoInfo[2];
-    let template = `<a href="${url}" target="_blank" title="${title}"><img src="${src}" alt="${title}"></a>`;
-    return template
+    let filledTemplate = template(title, src, url);
+    //let template = `<a href="${url}" target="_blank" title="${title}"><img src="${src}" alt="${title}"></a>`;
+    //return template;
+    return filledTemplate;
 }
 
 // print :: String -> null
