@@ -17,4 +17,7 @@ as an argument or as a **environment variable**:
 
 The default number of results is 50 but that can be defined as a parameter also (``NUM_RESULTS``).
 
+## Template
+
+The template be adapted to any need, just change the template.js module to your need.
 
