@@ -1,10 +1,12 @@
+'use strict'; 
+
 let Promise = require('promise');
 let yargs = require('yargs').argv;
 let request = require('request');
 let _ = require('lodash');
-const API_KEY = yargs.API_KEY || '';
-const SECRET = yargs.SECRET || '';
-const USER_ID = yargs.USER_ID || '';
+const API_KEY = yargs.FLICKR_API_KEY || process.env.FLICKR_API_KEY || '';
+const SECRET = yargs.FLICKR_SECRET || process.env.FLICKR_SECRET || '';
+const USER_ID = yargs.FLICKR_USER_ID || process.env.FLICKR_USER_ID || '';
 const NUM_RESULTS = yargs.NUM_RESULTS || 50;
 const URL = 'https://api.flickr.com/services/rest';
 const methods = {
@@ -30,10 +32,10 @@ function requestPromise(config) {
         request(config, function (err, res, body) {
             if (err) {
                 return reject(err);
-            } else if (res.statusCode !== 200) {
+            } else if (res.statusCode !== 200 || body.code !== 200) {
                 err = new Error("Unexpected status code: " + res.statusCode);
                 err.res = res;
-                return reject(err);
+                return reject(body);
             }
             resolve(body);
         });
@@ -115,7 +117,9 @@ let print = (string) => {
 
 // printPhotos [[String, String, String]] -> null
 let printPhotos = (stuff) => {
-    _.chain(stuff).forEach(_.flowRight(print, preparePhotoInfo)).value();
+    _.chain(stuff)
+    .reverse()
+    .forEach(_.flowRight(print, preparePhotoInfo)).value();
 };
 
 let getMyPhotos = () => {
@@ -143,6 +147,6 @@ let getSizesForAllPhotos = (idsAndTitles) => {
     .then(getPhotoIdsAndTitles)
     .then(getSizesForAllPhotos)
     .then(printPhotos)
-    .catch((e) => console.log('fail', e));
+    .catch((e) => console.log('Failed: ', e));
 }())
 
