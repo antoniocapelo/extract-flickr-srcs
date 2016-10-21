@@ -91,7 +91,7 @@ let getSizeAndUrl = (idTitleAndSizes) => {
 // getSize :: [String, String, Object] -> Promise [String, String, String]
 let getSize = (sizes) => {
     return _.chain(sizes)
-    .filter(size => { return size.label === 'Medium 800';})
+    .filter(size => { return size.label === 'Large';})
     .head()
     .value();
 }
